@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLI(1) — 云与 AI 平台命令行工具名录</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2315181a'/%3E%3Cpath d='M8 11l6 5-6 5' stroke='%23c8ef2b' stroke-width='2.6' fill='none'/%3E%3Cpath d='M17 21h7' stroke='%23c8ef2b' stroke-width='2.6'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#eef0ea;
+    --paper-2:#e4e7df;
+    --ink:#15181a;
+    --ink-2:#5c6469;
+    --ink-3:#8b9186;
+    --rule:#b8beb2;
+    --rule-soft:#ced3c8;
+    --mark:#c8ef2b;
+    --deep:#2b4a3f;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:'Noto Sans SC',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+    --gut:5.5rem;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-weight:400;
+    font-size:16px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    background-image:repeating-linear-gradient(0deg,rgba(21,24,26,.018) 0 1px,transparent 1px 4px);
+  }
+  ::selection{background:var(--mark);color:var(--ink);}
+  a{color:inherit;}
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+    padding:0 clamp(1rem,4vw,2.5rem) 6rem;
+  }
+
+  /* ---------- man page 页眉 ---------- */
+  .manhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:1rem;
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.06em;
+    color:var(--ink-2);
+    padding-top:2.4rem;
+    text-transform:uppercase;
+  }
+  .manhead .mid{color:var(--ink);}
+  .manrule{height:2px;background:var(--ink);margin:.5rem 0 0;}
+
+  /* ---------- 标题区 ---------- */
+  .titleblock{padding:2.2rem 0 2.6rem;}
+  .kicker{
+    font-family:var(--mono);
+    font-size:.72rem;
+    color:var(--ink-2);
+    letter-spacing:.04em;
+    margin-bottom:1rem;
+  }
+  .kicker b{background:var(--mark);color:var(--ink);padding:.1em .35em;font-weight:500;}
+  h1{
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:clamp(2.1rem,6vw,3.6rem);
+    line-height:1.08;
+    letter-spacing:-.02em;
+    margin:0 0 .2rem;
+  }
+  h1 .sub{
+    display:block;
+    font-size:clamp(.86rem,2.4vw,1.1rem);
+    font-weight:400;
+    letter-spacing:.02em;
+    color:var(--ink-2);
+    margin-top:.9rem;
+    font-family:var(--sans);
+    line-height:1.7;
+  }
+  .lede{
+    max-width:60ch;
+    margin:1.6rem 0 0;
+    font-size:.95rem;
+    color:#2c3236;
+  }
+
+  /* ---------- 终端会话 ---------- */
+  .session{
+    margin:2rem 0 0;
+    border:1px solid var(--ink);
+    background:var(--paper-2);
+  }
+  .session-bar{
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--mono);
+    font-size:.68rem;
+    letter-spacing:.06em;
+    color:var(--ink-2);
+    padding:.45rem .8rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .session pre{
+    margin:0;
+    padding:.9rem 1rem 1.1rem;
+    font-family:var(--mono);
+    font-size:.8rem;
+    line-height:1.85;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .session .p{color:var(--deep);}
+  .session .o{color:var(--ink-2);}
+  .session .hi{background:var(--mark);color:var(--ink);padding:0 .25em;font-weight:500;}
+  .cursor{
+    display:inline-block;
+    width:.55em;height:1em;
+    background:var(--ink);
+    vertical-align:-.12em;
+    animation:blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.cursor{animation:none;}}
+
+  /* ---------- 区块通用 ---------- */
+  section{padding:3.2rem 0 0;}
+  .sec-head{
+    display:grid;
+    grid-template-columns:var(--gut) 1fr;
+    gap:0;
+    align-items:baseline;
+    border-top:1px solid var(--ink);
+    padding-top:.7rem;
+  }
+  .sec-no{
+    font-family:var(--mono);
+    font-size:.78rem;
+    color:var(--deep);
+    letter-spacing:.02em;
+  }
+  .sec-title{
+    font-family:var(--mono);
+    font-size:clamp(1.15rem,3vw,1.5rem);
+    font-weight:700;
+    letter-spacing:-.01em;
+    margin:0;
+    line-height:1.35;
+  }
+  .sec-title small{
+    display:block;
+    font-family:var(--sans);
+    font-weight:400;
+    font-size:.8rem;
+    color:var(--ink-2);
+    letter-spacing:0;
+    margin-top:.35rem;
+    line-height:1.6;
+  }
+  .sec-body{margin-top:1.4rem;}
+
+  /* ---------- 分布图 ---------- */
+  .dist{
+    display:grid;
+    grid-template-columns:var(--gut) 1fr;
+  }
+  #chart{width:100%;height:clamp(230px,34vw,290px);}
+  .chart-note{
+    font-size:.74rem;
+    color:var(--ink-2);
+    margin:.6rem 0 0;
+    font-family:var(--mono);
+    letter-spacing:.01em;
+  }
+
+  /* ---------- 目录 ---------- */
+  .index{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:0 2.5rem;
+  }
+  .index a{
+    display:flex;
+    align-items:baseline;
+    gap:.6rem;
+    text-decoration:none;
+    padding:.5rem 0;
+    border-bottom:1px dotted var(--rule);
+    font-size:.9rem;
+  }
+  .index a:hover .ix-name{background:var(--mark);}
+  .index a:focus-visible{outline:2px solid var(--deep);outline-offset:3px;}
+  .ix-no{font-family:var(--mono);font-size:.72rem;color:var(--deep);min-width:2.2em;}
+  .ix-name{padding:0 .12em;}
+  .ix-tail{
+    margin-left:auto;
+    font-family:var(--mono);
+    font-size:.72rem;
+    color:var(--ink-3);
+  }
+
+  /* ---------- 检索 ---------- */
+  .filter{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:.7rem 0 .7rem;
+    margin-top:2.4rem;
+    display:flex;
+    align-items:center;
+    gap:.7rem;
+    flex-wrap:wrap;
+  }
+  .filter form{display:flex;align-items:center;gap:.5rem;flex:1 1 260px;}
+  .filter label{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--ink-2);
+    letter-spacing:.04em;
+  }
+  #q{
+    flex:1;
+    min-width:0;
+    font-family:var(--mono);
+    font-size:.85rem;
+    color:var(--ink);
+    background:transparent;
+    border:0;
+    border-bottom:1px solid var(--ink);
+    padding:.35rem .1rem;
+    border-radius:0;
+  }
+  #q:focus{outline:none;border-bottom:2px solid var(--deep);}
+  #q::placeholder{color:var(--ink-3);}
+  .filter-out{
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--ink-2);
+    letter-spacing:.02em;
+    white-space:nowrap;
+  }
+  .filter-out b{color:var(--ink);font-weight:500;}
+
+  /* ---------- 条目 ---------- */
+  .entry{
+    display:grid;
+    grid-template-columns:var(--gut) 1fr;
+    gap:0;
+    padding:1.35rem 0 1.5rem;
+    border-bottom:1px solid var(--rule-soft);
+    min-width:0;
+  }
+  .e-right{min-width:0;}
+  .entry:first-child{border-top:1px solid var(--rule-soft);}
+  .e-left{
+    font-family:var(--mono);
+    font-size:.72rem;
+    color:var(--ink-3);
+    letter-spacing:.02em;
+    padding-top:.15rem;
+  }
+  .e-tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:.62rem;
+    letter-spacing:.04em;
+    padding:.1em .4em;
+    border:1px solid var(--rule);
+    color:var(--ink-2);
+    margin-top:.5rem;
+    white-space:nowrap;
+  }
+  .e-tag.official{background:var(--deep);color:var(--paper);border-color:var(--deep);}
+  .e-head{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;}
+  .cmd{
+    font-family:var(--mono);
+    font-size:1.24rem;
+    font-weight:700;
+    letter-spacing:-.01em;
+    margin:0;
+    line-height:1.3;
+  }
+  .vendor{
+    font-size:.82rem;
+    color:var(--ink-2);
+    margin:0;
+  }
+  .role{
+    margin:.35rem 0 .6rem;
+    font-size:.9rem;
+    color:#2c3236;
+    max-width:62ch;
+  }
+  .code{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    background:var(--paper-2);
+    border-left:3px solid var(--rule);
+    padding:.35rem .6rem;
+    font-family:var(--mono);
+    font-size:.76rem;
+    color:var(--ink);
+    overflow-x:auto;
+  }
+  .code span.txt{white-space:nowrap;}
+  .copy{
+    margin-left:auto;
+    flex:none;
+    font-family:var(--mono);
+    font-size:.64rem;
+    letter-spacing:.06em;
+    background:transparent;
+    border:1px solid var(--rule);
+    color:var(--ink-2);
+    padding:.18em .5em;
+    cursor:pointer;
+    transition:background .12s linear,color .12s linear;
+  }
+  .copy:hover{background:var(--mark);color:var(--ink);border-color:var(--ink);}
+  .copy:focus-visible{outline:2px solid var(--deep);outline-offset:2px;}
+  .copy[data-done="1"]{background:var(--deep);color:var(--paper);border-color:var(--deep);}
+  .meta{
+    margin:.5rem 0 0;
+    font-size:.76rem;
+    color:var(--ink-2);
+    line-height:1.7;
+    overflow-wrap:anywhere;
+  }
+  .meta a{
+    color:var(--deep);
+    text-decoration:underline;
+    text-decoration-thickness:1px;
+    text-underline-offset:2px;
+  }
+  .meta a:hover{background:var(--mark);color:var(--ink);}
+  .note{
+    margin:.45rem 0 0;
+    font-size:.78rem;
+    color:var(--ink-2);
+    padding-left:.9rem;
+    border-left:1px solid var(--rule);
+    max-width:66ch;
+  }
+
+  /* ---------- 对照表 ---------- */
+  .tbl-wrap{overflow-x:auto;margin-top:.4rem;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    font-size:.84rem;
+  }
+  caption{
+    caption-side:top;
+    text-align:left;
+    font-family:var(--mono);
+    font-size:.72rem;
+    color:var(--ink-2);
+    padding-bottom:.5rem;
+    letter-spacing:.02em;
+  }
+  th{
+    text-align:left;
+    font-family:var(--mono);
+    font-weight:500;
+    font-size:.72rem;
+    letter-spacing:.04em;
+    color:var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding:.5rem .7rem .5rem 0;
+    background:var(--paper-2);
+  }
+  td{
+    vertical-align:top;
+    padding:.65rem .7rem .65rem 0;
+    border-bottom:1px solid var(--rule-soft);
+    color:#2c3236;
+  }
+  td.k{font-family:var(--mono);font-size:.78rem;color:var(--ink);}
+  td.k em{font-style:normal;background:var(--mark);padding:0 .15em;}
+  tr.bad td{color:#4a5054;}
+  tr.bad td.k{color:var(--ink-2);}
+  .mark-bad{color:#8a3a1e;}
+
+  /* ---------- 说明块 ---------- */
+  .list{list-style:none;padding:0;margin:0;max-width:70ch;}
+  .list li{
+    padding:.6rem 0 .6rem 1.6rem;
+    border-bottom:1px dotted var(--rule);
+    position:relative;
+    font-size:.86rem;
+  }
+  .list li::before{
+    content:"—";
+    position:absolute;
+    left:0;
+    color:var(--ink-3);
+    font-family:var(--mono);
+  }
+  .list li b{font-weight:500;}
+
+  /* ---------- 提示条 ---------- */
+  #toast{
+    position:fixed;
+    left:50%;
+    bottom:1.6rem;
+    transform:translate(-50%,1.2rem);
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--mono);
+    font-size:.74rem;
+    padding:.5rem .9rem;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s linear,transform .18s ease;
+    z-index:60;
+  }
+  #toast.on{opacity:1;transform:translate(-50%,0);}
+
+  .empty{
+    padding:2.2rem 0;
+    font-size:.9rem;
+    color:var(--ink-2);
+    border-top:1px solid var(--rule-soft);
+  }
+  .empty code{font-family:var(--mono);background:var(--paper-2);padding:.1em .3em;}
+
+  /* ---------- 页脚 ---------- */
+  footer{
+    margin-top:4rem;
+    border-top:2px solid var(--ink);
+    padding-top:1rem;
+    font-family:var(--mono);
+    font-size:.7rem;
+    color:var(--ink-2);
+    line-height:2;
+    letter-spacing:.02em;
+  }
+  footer a{color:var(--deep);}
+  .foot-grid{
+    display:grid;
+    grid-template-columns:var(--gut) 1fr;
+    gap:0;
+  }
+
+  /* ---------- 窄屏 ---------- */
+  @media (max-width:640px){
+    :root{--gut:2.6rem;}
+    body{font-size:16px;}
+    .manhead{font-size:.65rem;flex-wrap:wrap;gap:.2rem 1rem;}
+    .entry{padding:1.2rem 0 1.35rem;}
+    .entry{grid-template-columns:1fr;row-gap:.45rem;}
+    .e-left{display:flex;align-items:center;gap:.55rem;padding-top:0;}
+    .e-tag{margin-top:0;}
+    .cmd{font-size:1.12rem;}
+    .role{font-size:.95rem;}
+    .meta,.note{font-size:.88rem;}
+    .session pre{font-size:.88rem;}
+    .sec-body{margin-top:1.1rem;}
+    .index{grid-template-columns:1fr;}
+    .filter{padding:.6rem 0;}
+    #q{font-size:16px;}
+    .dist{grid-template-columns:1fr;}
+    .dist .sec-spacer{display:none;}
+    #chart{height:240px;}
+    .tbl-wrap{overflow-x:visible;}
+    table{min-width:0;display:block;font-size:.86rem;}
+    table caption{display:block;}
+    table colgroup,table thead{display:none;}
+    table tbody{display:block;}
+    table tr{
+      display:block;
+      padding:.85rem 0 .9rem;
+      border-bottom:1px solid var(--rule-soft);
+    }
+    table td{
+      display:block;
+      width:auto;
+      border:0;
+      padding:.05rem 0;
+    }
+    table td:first-child{
+      font-size:1.02rem;
+      font-weight:700;
+      margin-bottom:.15rem;
+    }
+    table td:nth-child(2){color:var(--ink-2);font-size:.82rem;}
+    table td:nth-child(3){margin-top:.3rem;}
+    footer .foot-grid{grid-template-columns:1fr;gap:.6rem;}
+    footer .foot-grid span:first-child{color:var(--ink);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .copy{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="manhead">
+    <span>CLI(1)</span>
+    <span class="mid">命令行工具名录</span>
+    <span>2026-10-28</span>
+  </div>
+  <div class="manrule"></div>
+
+  <div class="titleblock" id="top">
+    <p class="kicker">检索范围：11 家云与存储 · 8 家海外平台 · 9 家模型厂商<br><b>仅收录可查证命令</b></p>
+    <h1>云与 AI 平台<br>命令行工具名录
+      <span class="sub">一份按“管什么”而不是按“谁家的”编排的 CLI 索引。先分清它管机器还是管模型，再决定装哪一个。</span>
+    </h1>
+    <p class="lede">近两年“CLI”这个词被两种完全不同的东西共用：一类是云厂商用来管服务器、存储、网络的运维工具；另一类是模型厂商给 AI Agent 用的执行入口，装进 Cursor、Claude Code 就能读写文档、生成图视频。命令名相似、能力不重叠，混装会白折腾。</p>
+
+    <div class="session">
+      <div class="session-bar"><span>检索会话</span><span>bash · 只读</span></div>
+      <pre><span class="p">$</span> grep -c '^CLI' registry.txt
+<span class="o">→ 载入 <span class="hi" id="count-total">—</span> 个条目，分属 <span class="hi" id="count-vendor">—</span> 个类别</span>
+<span class="p">$</span> <span class="cursor"></span></pre>
+    </div>
+  </div>
+
+  <!-- ============ 分布图 ============ -->
+  <section id="dist" aria-label="收录分布">
+    <div class="sec-head">
+      <span class="sec-no">§0</span>
+      <h2 class="sec-title">收录分布<small>纵轴为类别，横轴为条目数。点击任一条跳转到对应章节。</small></h2>
+    </div>
+    <div class="sec-body dist">
+      <div></div>
+      <div>
+        <div id="chart" role="img" aria-label="各类别 CLI 收录数量条形图"></div>
+        <p class="chart-note">数据集：本页收录条目 · 计数随检索结果变动</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 目录 ============ -->
+  <section id="index" aria-label="目录">
+    <div class="sec-head">
+      <span class="sec-no">目录</span>
+      <h2 class="sec-title">INDEX<small>五个条目章节，外加一节易混对照、一节检索边界与选型。</small></h2>
+    </div>
+    <div class="sec-body">
+      <div class="index" id="index-list"></div>
+    </div>
+  </section>
+
+  <!-- 检索框 -->
+  <div class="filter">
+    <form id="search-form" role="search" onsubmit="return false;">
+      <label for="q">FILTER</label>
+      <input id="q" type="search" placeholder="命令 / 厂商 / 用途" autocomplete="off">
+    </form>
+    <span class="filter-out" id="filter-out">命中 <b>—</b> / —</span>
+  </div>
+
+  <div id="sections"></div>
+
+  <footer>
+    <div class="foot-grid">
+      <span>SEE&nbsp;ALSO</span>
+      <span>
+        各厂商官方文档（链接见每条目）· 检索时间 2026-10-28<br>
+        标注“官方文档”的条目可回溯到厂商域名下的说明页；标注“社区记载”的仅有第三方来源，采信前请到官网复核。<br>
+        本页为名录，不含安装教学与鉴权配置步骤。
+      </span>
+    </div>
+  </footer>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script>
+/* ==========================================================
+   数据：每条的 code 为可复制的最小示例；verified 表示来源等级
+   ========================================================== */
+const SECTIONS = [
+{
+  id: 'cloud', no: '§1', title: '国内云基础设施 CLI',
+  sub: '管服务器、VPC、存储、CDN。共同特征：AK/SK 鉴权、命令结构为“产品 + 动作”、输出可进脚本。',
+  items: [
+    {
+      cmd: 'aliyun', vendor: '阿里云', verified: 'official',
+      role: '阿里云全产品线的命令行入口，覆盖 ECS、OSS、RDS、SLB、函数计算等，按服务插件式加载。',
+      code: 'aliyun ecs DescribeInstances',
+      meta: '文档入口 help.aliyun.com（CLI 章节）。',
+      note: '与模型侧的百炼 CLI 是两套命令，别混装。'
+    },
+    {
+      cmd: 'tccli', vendor: '腾讯云', verified: 'official',
+      role: '腾讯云统一 CLI，覆盖 CVM、COS、CLB、CAM 等，支持多账号 profile 与多种输出格式。',
+      code: 'tccli cvm DescribeInstances',
+      meta: '文档入口 cloud.tencent.com/document。',
+      note: '模型侧另有 TokenHub CLI（thcli），与 tccli 只差一个字母，不是同一个工具。'
+    },
+    {
+      cmd: 'hcloud', vendor: '华为云', verified: 'official',
+      role: 'KooCLI（原名 HCloud CLI），按 API Explorer 上发布的 API 逐个调用，绿色免安装、解压即用。',
+      code: 'hcloud ECS NovaListServers',
+      src: [{ label: 'support.huaweicloud.com/productdesc-hcli', url: 'https://support.huaweicloud.com/productdesc-hcli/hcli_01.md' }],
+      note: '官方定义写得很直白：它只提供“一种通过 CLI 调用云服务 API 的方法”，用前需先了解目标 API。'
+    },
+    {
+      cmd: 'bcecli', vendor: '百度智能云', verified: 'official',
+      role: '百度智能云资源管理 CLI，覆盖云服务器 BCC、对象存储 BOS、CDN 等；BOS 操作也走这套命令。',
+      code: 'bcecli bos ls',
+      meta: '文档入口 cloud.baidu.com。',
+      note: '与百度网盘无关，网盘侧没有官方 CLI。'
+    },
+    {
+      cmd: 've', vendor: '火山引擎', verified: 'official',
+      role: '火山引擎云资源 CLI，命令结构固定为 ve <service> <action> [--参数 值]，支持 console login、AK、StsToken、SSO 四种凭证。',
+      code: 've ecs ListInstances',
+      src: [{ label: 'volcengine.com/docs/83927/1874979', url: 'https://www.volcengine.com/docs/83927/1874979?lang=zh' }],
+      note: '同一厂商另有 vecli（接 AI 编程工具）与 arkcli（方舟模型平台），三者互不替代，详见 §6。'
+    },
+    {
+      cmd: 'ctyun-cli', vendor: '天翼云', verified: 'official',
+      role: '天翼云统一管控 CLI，交互式 configure 写入 ~/.ctyun-cli.yaml；官方定位里明确写了“可作为 AI 智能体的调用入口”。',
+      code: 'ctyun-cli configure',
+      src: [{ label: 'ctyun.cn/document/11095072', url: 'https://www.ctyun.cn/document/11095072/11096206' }],
+      note: 'Windows 下可执行文件为 ctyun-cli.exe，Linux 首次安装后常见 PATH 未生效，需临时加 ~/.ctyun-cli/bin。'
+    },
+    {
+      cmd: 'jdc', vendor: '京东云', verified: 'official',
+      role: '京东云 CLI，基于 OpenAPI 元数据生成，覆盖云主机、网络、容器等十多个业务线。',
+      code: 'pip install jdcloud_cli',
+      src: [{ label: 'docs.jdcloud.com/cn/cli/installation', url: 'https://docs.jdcloud.com/cn/cli/installation' }],
+      note: '开源，源码在 github.com/jdcloud-api/jdcloud-cli；使用前需保证安装机可访问互联网。'
+    },
+    {
+      cmd: 'ucloud', vendor: 'UCloud', verified: 'official',
+      role: 'UCloud 资源 CLI，支持多个命名配置并存，本地文件存 AK/SK 与默认 project、region。',
+      code: 'ucloud vpc list',
+      src: [{ label: 'docs.ucloud.cn/cli', url: 'https://docs.ucloud.cn/cli/mdToPdf/cli.pdf' }]
+    },
+    {
+      cmd: 'qingcloud-cli', vendor: '青云', verified: 'official',
+      role: '青云公有云资源命令行接口，可查看、创建、操作资源，支持 Linux / macOS / Windows。',
+      code: 'pip install qingcloud-cli',
+      src: [{ label: 'docsv4.qingcloud.com · CLI 安装', url: 'https://docsv4.qingcloud.com/user_guide/development_docs/cli/install/install/' }],
+      note: '官方文档标注版本为 1.0.1，更新节奏明显慢于头部厂商。'
+    }
+  ]
+},
+{
+  id: 'storage', no: '§2', title: '对象存储专用工具',
+  sub: '与上面的全资源 CLI 并存的一类：只干上传下载、桶管理、跨云迁移，语法更接近 cp / rsync。',
+  items: [
+    {
+      cmd: 'ossutil', vendor: '阿里云 OSS', verified: 'official',
+      role: 'OSS 专用命令行工具，按 cp、ls、rm 的语义操作桶与对象，适合批量上传与迁移。',
+      code: 'ossutil cp -r ./dir oss://bucket/',
+      meta: '文档入口 help.aliyun.com（ossutil 章节）。',
+      note: '与 aliyun CLI 互补：日常传文件用 ossutil，改配置、查实例用 aliyun。'
+    },
+    {
+      cmd: 'coscmd', vendor: '腾讯云 COS', verified: 'official',
+      role: 'COS 专用工具，支持目录级上传下载、批量删除与分片上传。',
+      code: 'coscmd upload -r ./dir /path',
+      meta: '文档入口 cloud.tencent.com/document（COS 工具章节）。',
+      note: '腾讯云对象存储侧的独立工具，不随 tccli 一起装。'
+    },
+    {
+      cmd: 'KS3Util', vendor: '金山云 KS3', verified: 'official',
+      role: '金山云对象存储 KS3 的官方命令行工具，做桶创建、上传下载、配置管理等常用操作。',
+      code: 'KS3Util ls ks3://bucket',
+      src: [{ label: 'docs.ksyun.com/documents/42067', url: 'https://docs.ksyun.com/documents/42067?type=3' }],
+      note: '同厂商还有图形化的 KS3 Finder；KS3Util 是熟悉命令行的人的首选路径。'
+    },
+    {
+      cmd: 'qshell', vendor: '七牛云 Kodo', verified: 'official',
+      role: '基于七牛公开 API 实现的命令行工具，融合存储、CDN 及其他服务；另含 qshell sandbox 子命令管理沙箱。',
+      code: 'qshell listbucket bucketname',
+      src: [{ label: 'developer.qiniu.com/kodo/1302/qshell', url: 'https://developer.qiniu.com/kodo/1302/qshell' }],
+      note: '设计初衷是“方便开发者测试和使用七牛 API”，并非纯文件同步工具。'
+    },
+    {
+      cmd: 'tosutil', vendor: '火山引擎 TOS', verified: 'official',
+      role: 'TOS 对象存储专用工具，与 ve（云资源 CLI）分工，负责桶与对象的批量操作。',
+      code: 'tosutil cp -r ./dir tos://bucket/',
+      meta: '文档入口 volcengine.com/docs（TOS 工具章节）。',
+      note: '与 ve 的关系同 ossutil 与 aliyun：一个管文件，一个管资源。'
+    },
+    {
+      cmd: 'rclone', vendor: '第三方 · 跨云', verified: 'community',
+      role: '通用云存储同步工具，语义对齐 rsync / cp / mount，可同时对接多家 S3 兼容存储，做跨云搬迁时最省事。',
+      code: 'rclone sync ./dir remote:bucket',
+      src: [{ label: 'developer.qiniu.com/kodo/12285/docking-rclone', url: 'https://developer.qiniu.com/kodo/12285/docking-rclone' }],
+      note: '非任何云厂商官方工具，但七牛等厂商文档直接提供了对接教程，属于事实标准。'
+    }
+  ]
+},
+{
+  id: 'model', no: '§3', title: '国内大模型平台与 Agent CLI',
+  sub: '这一类不给你服务器，给的是执行入口：把模型、生图、生视频、语音、检索封装成终端命令，再挂到 Agent 里。',
+  items: [
+    {
+      cmd: 'arkcli', vendor: '火山方舟', verified: 'official',
+      role: '方舟平台官方 CLI：本地终端完成认证与资源管理，并把能力装进常用 AI Agent，用自然语言触发模型调用、推理接入点管理、内容生成、用量账单查询。',
+      code: 'npm install -g @volcengine/ark-cli',
+      src: [{ label: 'volcengine.com/docs/82379/2536875', url: 'https://www.volcengine.com/docs/82379/2536875?lang=zh' }],
+      note: '支持 --profile 多套配置与 --dry-run 预览，不会真的发起变更。'
+    },
+    {
+      cmd: 'bl', vendor: '阿里云百炼', verified: 'official',
+      role: '百炼 CLI，命令别名 bailian；把百炼的全模态能力（文本、生图、图像编辑、视频、语音、检索）暴露为结构化工具调用，供 Agent 一条自然语言指令触发。',
+      code: 'npm install -g bailian-cli',
+      src: [{ label: 'help.aliyun.com/zh/model-studio/cli', url: 'https://help.aliyun.com/zh/model-studio/cli/installation' }],
+      note: '官方另提供 curl 一键装：curl -fsSL https://bailian.aliyun.com/cli/install.sh | bash；插件体系用 bl plugin install 扩展。'
+    },
+    {
+      cmd: 'qianwen', vendor: '千问云', verified: 'official',
+      role: '千问云官方 CLI：在终端或 Agent 运行时里发现模型、查看用量、管理认证、诊断本地环境；不带参数进 REPL，带参数可进脚本与 CI。',
+      code: 'qianwen',
+      src: [{ label: 'platform.qianwenai.com/cli', url: 'https://platform.qianwenai.com/cli' }],
+      note: '官方强调“Agent 友好协议”，输出面向程序消费而非人眼阅读。'
+    },
+    {
+      cmd: 'thcli', vendor: '腾讯云 TokenHub', verified: 'official',
+      role: 'TokenHub 模型服务命令行：一条命令完成模型调用，另有 auth / key / models 命令组管理密钥与模型比价。',
+      code: 'npm i -g tencent-tokenhub-cli',
+      src: [{ label: 'cloud.tencent.com/document/product/1823/138217', url: 'https://cloud.tencent.cn/document/product/1823/138217' }],
+      note: '首次使用执行 thcli auth login；与资源侧 tccli 是两套，装错会找不到命令。'
+    },
+    {
+      cmd: 'qianfan', vendor: '百度千帆', verified: 'official',
+      role: '千帆 SDK 内置的命令行工具，可在终端直接与平台交互：大模型对话、发起训练任务、预览数据集。',
+      code: 'pip install qianfan',
+      src: [{ label: 'qianfan.readthedocs.io/docs/cli', url: 'https://qianfan.readthedocs.io/en/latest/docs/cli.html' }],
+      note: '鉴权走 QIANFAN_ACCESS_KEY / QIANFAN_SECRET_KEY 环境变量，也可在参数或当前目录 .env 里给。'
+    },
+    {
+      cmd: 'mmx', vendor: 'MiniMax', verified: 'official',
+      role: 'MiniMax 官方全模态 CLI：多轮文本对话（可流式、可 JSON 输出）、文生图、异步视频生成、TTS、音乐、图像理解、网页搜索。',
+      code: 'npm install -g mmx-cli',
+      src: [{ label: 'platform.minimaxi.com/docs/token-plan/minimax-cli', url: 'https://platform.minimaxi.com/docs/token-plan/minimax-cli' }],
+      note: '官方配套 Skill 用 npx skills add MiniMax-AI/cli 安装；mmx quota 查 Token Plan 余额。'
+    },
+    {
+      cmd: 'kimi', vendor: '月之暗面', verified: 'official',
+      role: 'Kimi Code CLI，开源终端编程智能体：读改代码、执行 shell 命令、按反馈规划下一步。',
+      code: 'kimi',
+      src: [{ label: 'kimi.ai/zh-hans/academy/kimi-code-cheat-sheet', url: 'https://www.kimi.ai/zh-hans/academy/kimi-code-cheat-sheet' }],
+      note: '交互沿用终端 Agent 的惯例：斜杠命令、快捷键、内置工具，/help 可看全部。'
+    },
+    {
+      cmd: 'step', vendor: '阶跃星辰 StepFun', verified: 'official',
+      role: 'Step Code 的命令行入口：启动会话，并管理安装、资源包与 MCP 服务器；子命令体系为 step <subcommand>。',
+      code: 'step',
+      src: [{ label: 'platform.stepfun.ai/docs/en/step-code/reference/cli', url: 'https://platform.stepfun.ai/docs/en/step-code/reference/cli' }],
+      note: '安装是远程脚本：curl -fsSL https://static-openapi.com/stepcode/install.sh | bash。'
+    },
+    {
+      cmd: 'zcode', vendor: '智谱', verified: 'community',
+      role: 'GLM 系列模型对应的官方终端工具，在命令行做代码生成、解释、重构、跑测试；跟随智谱 Coding Plan 提供。',
+      code: 'npm install -g @zhipu/zcode',
+      meta: '智谱官方文档有 Coding Plan 的 Codex / Gemini CLI 接入页，但 zcode 本轮仅取得第三方记载。',
+      note: 'Windows 下需 Node 22+；装前先确认版本，否则会出现难以定位的启动失败。'
+    },
+    {
+      cmd: 'lark-cli', vendor: '飞书', verified: 'official',
+      role: '飞书官方开源 CLI（MIT），给 Agent 一套连接飞书业务域的执行入口：读消息、查日历、写文档、建多维表格、搜知识库、发邮件。',
+      code: 'npx @larksuite/cli@latest install',
+      src: [{ label: 'open.larkoffice.com · Lark CLI', url: 'https://open.larkoffice.com/document/mcp_open_tools/feishu-cli-let-ai-actually-do-your-work-in-feishu' }],
+      note: '属办公域，不是云资源工具，也不属于火山引擎；首装可用 npx，之后用 lark-cli update 升级。'
+    },
+    {
+      cmd: 'kilo', vendor: 'Kilo Code · 多云可接', verified: 'official',
+      role: 'Kilo Code 的 CLI 客户端。阿里云百炼（按量、Coding Plan、Token Plan）与腾讯云 TokenHub 都提供了接入文档，同一条 kilo 命令可指向不同后端。',
+      code: 'kilo',
+      src: [{ label: 'alibabacloud.com/help/model-studio/kilo-cli', url: 'https://www.alibabacloud.com/help/en/model-studio/cli/config' }],
+      note: '正因为它能接多家，看到“某云的 Kilo CLI”时别以为是那家自研的——它只是客户端。'
+    }
+  ]
+},
+{
+  id: 'global-cloud', no: '§4', title: '海外云与开发者平台 CLI',
+  sub: '语法统一在“服务 + 动作”，是上面国内厂商 CLI 的设计原型。列出来是为了对照命名与鉴权习惯。',
+  items: [
+    {
+      cmd: 'aws', vendor: 'AWS', verified: 'official',
+      role: 'AWS 官方开源 CLI，用最少的配置在终端拿到与管理控制台等效的能力，支持 Linux / macOS / Windows。',
+      code: 'aws ec2 describe-instances',
+      src: [{ label: 'docs.aws.amazon.com/cli', url: 'https://docs.aws.amazon.com/zh_cn/cli/latest/userguide/cli-chap-welcome.html' }]
+    },
+    {
+      cmd: 'az', vendor: 'Azure', verified: 'official',
+      role: '微软跨平台 CLI，基于 Python，针对自动化优化，交互式会话与脚本都支持，也可在 Cloud Shell 里直接用。',
+      code: 'az vm list',
+      src: [{ label: 'learn.microsoft.com/cli/azure', url: 'https://learn.microsoft.com/zh-cn/cli/azure/get-started-with-azure-cli?view=azure-cli-latest' }],
+      note: '微软同时维护 Azure PowerShell，两者能力重叠；选型看团队既有脚本是 shell 还是 pwsh。'
+    },
+    {
+      cmd: 'gcloud', vendor: 'Google Cloud', verified: 'official',
+      role: 'Google Cloud CLI，管理计算实例、Cloud Storage、数据库以及几乎所有 GCP 服务，可脚本化部署与 CI/CD。',
+      code: 'gcloud compute instances list',
+      src: [{ label: 'cloud.google.com/cli', url: 'https://cloud.google.com/cli' }]
+    },
+    {
+      cmd: 'oci', vendor: 'Oracle Cloud', verified: 'official',
+      role: 'OCI CLI，小体积工具，控制台能干的事它都能干并额外提供脚本能力；-i 进入交互模式，带参数补全与彩色提示。',
+      code: 'oci -i',
+      src: [{ label: 'docs.oracle.com/iaas · CLI', url: 'https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cliconcepts.htm' }]
+    },
+    {
+      cmd: 'doctl', vendor: 'DigitalOcean', verified: 'official',
+      role: 'DigitalOcean 官方 CLI，覆盖控制面板的绝大多数功能，可创建、配置、删除资源。',
+      code: 'doctl compute droplet list',
+      src: [{ label: 'docs.digitalocean.com/reference/doctl', url: 'https://docs.digitalocean.com/reference/doctl/' }]
+    },
+    {
+      cmd: 'vercel', vendor: 'Vercel', verified: 'official',
+      role: '前端部署平台 CLI：deploy、dev、env、domains、rollback、promote 一整套，部署类命令是它的核心。',
+      code: 'vercel deploy',
+      src: [{ label: 'vercel.com/docs/cli', url: 'https://vercel.com/docs/cli' }]
+    },
+    {
+      cmd: 'flyctl', vendor: 'Fly.io', verified: 'official',
+      role: 'Fly.io 的应用与机器管理 CLI，含 apps、certs、checks、console、consul 等命令组，另有后台 agent 管理 wireguard 连接。',
+      code: 'flyctl launch',
+      src: [{ label: 'fly.io/docs/flyctl', url: 'https://fly.io/docs/flyctl/help/' }]
+    },
+    {
+      cmd: 'wrangler', vendor: 'Cloudflare', verified: 'community',
+      role: 'Cloudflare 开发者平台的 CLI，负责 Workers、Pages、KV 等边缘资源的本地开发与部署。',
+      code: 'wrangler deploy',
+      meta: '本轮检索未取得该工具的官方直达文档页，安装前建议以 Cloudflare 官网为准。'
+    }
+  ]
+},
+{
+  id: 'global-agent', no: '§5', title: '海外 AI 编程与终端 Agent',
+  sub: '这一类是“模型 + 工具循环”的运行时，会读文件、跑命令、改代码。国内厂商的 Agent CLI 基本都在对标它们。',
+  items: [
+    {
+      cmd: 'claude', vendor: 'Anthropic · Claude Code', verified: 'official',
+      role: '终端原生编程 Agent：claude 进交互，claude "任务" 带初始提示，-p 单次提问后退出，-c 续上一次会话。',
+      code: 'claude -p "explain this function"',
+      src: [{ label: 'code.claude.com/docs/en/cli-reference', url: 'https://code.claude.com/docs/en/cli-reference' }],
+      note: '无头模式可接管道：gh pr diff "$1" | claude -p ...，适合塞进 CI 做自动审查。'
+    },
+    {
+      cmd: 'gemini', vendor: 'Google · Gemini CLI', verified: 'official',
+      role: 'Google 的终端 Agent，命令带 /、@、! 三类前缀分别对应会话命令、引用文件与执行 shell。',
+      code: 'gemini',
+      src: [{ label: 'google-gemini.github.io/gemini-cli', url: 'https://google-gemini.github.io/gemini-cli/docs/cli/commands.html' }],
+      note: '智谱官方文档专门给了“定制版 Gemini CLI 接 GLM”的指南，说明这套壳子可被换后端。'
+    },
+    {
+      cmd: 'codex', vendor: 'OpenAI · Codex CLI', verified: 'official',
+      role: 'OpenAI 的终端编码 Agent，需 Node 18+；火山方舟、智谱的 Coding Plan 文档都直接教怎么把它指向自家模型。',
+      code: 'npm i -g @openai/codex',
+      src: [{ label: 'docs.volcengine.com · Codex 接入', url: 'https://docs.volcengine.com/docs/ark/coding-plan-personal-ai-codex?lang=zh' }],
+      note: '支持 Responses API，所以各家只要兼容该协议就能接管。'
+    },
+    {
+      cmd: 'copilot', vendor: 'GitHub · Copilot CLI', verified: 'official',
+      role: 'GitHub 的终端原生编程 Agent，2026 年 2 月转 GA，定位从“终端助手”变成完整的 agentic 开发环境。',
+      code: 'copilot',
+      src: [{ label: 'docs.github.com · Copilot CLI quickstart', url: 'https://docs.github.com/ja/copilot/get-started/cli-quickstart' }],
+      note: '早期还有 gh copilot 子命令形态，用于解释与建议 shell 命令，与独立 CLI 不是同一入口。'
+    },
+    {
+      cmd: 'opencode', vendor: '开源 · OpenCode', verified: 'official',
+      role: '开源终端编程 Agent，提供 TUI 界面，可自由接不同模型厂商，OpenCode 1 与 2 共用 opencode 命令、不能并存。',
+      code: 'opencode',
+      src: [{ label: 'opencode.ai/docs', url: 'https://opencode.ai/docs/' }]
+    },
+    {
+      cmd: 'aider', vendor: '开源 · Aider', verified: 'community',
+      role: '终端里的结对编程工具，深度绑定 Git，直接操作文件系统并执行命令。',
+      code: 'aider',
+      meta: '无官方中文文档页；本轮来源为技术社区的工具盘点。'
+    },
+    {
+      cmd: 'goose', vendor: '开源 · Goose', verified: 'community',
+      role: '开源终端 Agent，与 Aider、Codex、OpenCode 同属“CLI 型自主智能体”一类。',
+      code: 'goose session',
+      meta: '同上，本轮仅见社区盘点，未取得官方文档。'
+    }
+  ]
+},
+{
+  id: 'confusion', no: '§6', title: '易混对照',
+  sub: '这一节比前面五节更值得看。名录错一个字母就是另一件东西，下面每一行都是真实存在的混淆。',
+  type: 'table',
+  caption: '表 1 · 读音或拼写相近、归属完全不同的命令',
+  cols: [
+    { w: '20%', label: '命令 / 名称' },
+    { w: '26%', label: '实际归属' },
+    { w: '54%', label: '容易错在哪' }
+  ],
+  rows: [
+    ['arkcli', '火山方舟（模型平台）', '常被写成 arc-cli。没有 arc-cli 这个工具，社区口语把 Ark 读成了 arc。'],
+    ['ve', '火山引擎（云资源）', '只管 ECS、VPC、RDS、Redis 这类基础资源，不调模型。'],
+    ['vecli', '火山方舟（接 AI 编程工具）', '与 ve 只差一个字母。装 ve 想接 Cursor 会一直找不到入口。'],
+    ['qianwen', '千问云（模型发现 / 用量 / 认证）', '和 Qwen Code 的 qwen 是两个命令，前者管平台，后者是终端 Agent。'],
+    ['qianfan', '百度千帆（SDK 内置 CLI）', '装在 Python 环境里，pip 装；与百度云资源 bcecli 毫无关系。'],
+    ['thcli', '腾讯云 TokenHub（模型服务）', '与腾讯云资源 tccli 只差一个字母，用途、鉴权、文档全不同。'],
+    ['lark-cli', '飞书（办公业务域）', '不是火山引擎的产品，也不管云资源；常与 arkcli 同时出现在 Agent 配置里。'],
+    ['kilo', 'Kilo Code 客户端（多云可接）', '阿里云百炼与腾讯云 TokenHub 文档都在教接入，容易被误当成某家自研 CLI。'],
+    ['bcecli', '百度智能云（云资源）', '不是百度网盘。网盘侧没有官方 CLI，第三方工具 bypy 与之无关。'],
+    ['KooCLI / hcloud', '华为云', '工具名与命令名不一致：文档叫 KooCLI，敲的是 hcloud；联盟区域另有 Cloud CLI。']
+  ]
+},
+{
+  id: 'limits', no: '§7', title: '检索边界与选型',
+  sub: '“没查到”和“不存在”是两件事，这一节把两者分开写，顺便给三条选型判断。',
+  type: 'list',
+  intro: '以下厂商在本轮检索中未取得官方独立 CLI 文档，因此不进入正式条目，也不做推测性描述：',
+  items: [
+    { b: '移动云', text: '官网可检索到 OpenAPI 文档与 Python SDK 说明，未见独立命令行工具的文档页。' },
+    { b: '讯飞星火、商汤', text: '可检索到模型 API 与 Agent 平台文档，未见官方命令行入口。' },
+    { b: 'DeepSeek', text: '官方文档明确走 Agent 工具接入（Claude Code、OpenCode、Crush、Langcli 等），不提供独立 CLI。' },
+    { b: 'Qwen Code（qwen）', text: '开源终端 Agent 确实存在，但本轮未取得官方文档直达页，故只在此备注，不作正式条目。' },
+    { b: 'AWS / Azure / GCP 的对象存储', text: '均并入各自主 CLI（aws s3、az storage、gcloud storage），不单列，避免表里出现重复能力。' }
+  ],
+  after: [
+    { b: '先问它管什么。', text: '管机器（§1、§4）→ 看 AK/SK 与 Region 配置；管模型（§3、§5）→ 看它支持哪些模型、能不能被 Agent 调用。两类都装不冲突，但别指望一个命令两头都干。' },
+    { b: '再问谁来调它。', text: '给你自己敲，选文档全、报错清楚的；给 Agent 调，选官方明确写了“Agent 友好”“可安装 Skill”的，输出结构与幂等性比语法糖重要。' },
+    { b: '最后问换不换得掉。', text: '客户端型（kilo、opencode、Claude Code）可换后端，长期看更抗迁移；平台原生型（aliyun、arkcli）锁定深但省事。混着用是最常见的架构。' }
+  ]
+}
+];
+
+/* ==========================================================
+   渲染
+   ========================================================== */
+const esc = function (s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};
+
+const itemSections = SECTIONS.filter(function (s) { return !s.type || s.type === 'items'; });
+const TOTAL = itemSections.reduce(function (n, s) { return n + s.items.length; }, 0);
+
+/* ---------- 终端会话里的计数 ---------- */
+(function () {
+  var box = document.querySelector('.session .o');
+  if (box) {
+    box.innerHTML = '→ 载入 <span class="hi">' + TOTAL + '</span> 个条目，分属 <span class="hi">' +
+      itemSections.length + '</span> 个类别';
+  }
+})();
+
+/* ---------- 目录 ---------- */
+(function () {
+  var host = document.getElementById('index-list');
+  var html = '';
+  SECTIONS.forEach(function (s) {
+    var tail = s.items ? s.items.length + ' 条' : (s.type === 'table' ? '对照表' : '说明');
+    if (s.type === 'list') tail = '说明';
+    html += '<a href="#' + s.id + '"><span class="ix-no">' + esc(s.no) + '</span>' +
+            '<span class="ix-name">' + esc(s.title) + '</span>' +
+            '<span class="ix-tail">' + esc(tail) + '</span></a>';
+  });
+  host.innerHTML = html;
+})();
+
+/* ---------- 章节 ---------- */
+(function () {
+  var host = document.getElementById('sections');
+  var html = '';
+
+  SECTIONS.forEach(function (sec) {
+    html += '<section id="' + sec.id + '">';
+    html += '<div class="sec-head"><span class="sec-no">' + esc(sec.no) + '</span>' +
+            '<h2 class="sec-title">' + esc(sec.title) +
+            (sec.sub ? '<small>' + esc(sec.sub) + '</small>' : '') + '</h2></div>';
+    html += '<div class="sec-body">';
+
+    if (!sec.type || sec.type === 'items') {
+      sec.items.forEach(function (it, i) {
+        var searchText = [it.cmd, it.vendor, it.role, it.code, it.meta, it.note].join(' ').toLowerCase();
+        html += '<article class="entry" data-s="' + esc(searchText) + '">';
+        html += '<div class="e-left">' + esc(sec.no.replace('§', '')) + '.' + (i + 1) +
+                '<br><span class="e-tag ' + (it.verified === 'official' ? 'official' : '') + '">' +
+                (it.verified === 'official' ? '官方文档' : '社区记载') + '</span></div>';
+        html += '<div class="e-right">';
+        html += '<div class="e-head"><h3 class="cmd">' + esc(it.cmd) + '</h3>' +
+                '<p class="vendor">' + esc(it.vendor) + '</p></div>';
+        html += '<p class="role">' + esc(it.role) + '</p>';
+        html += '<div class="code"><span class="txt">$ ' + esc(it.code) + '</span>' +
+                '<button class="copy" type="button" data-copy="' + esc(it.code) + '">COPY</button></div>';
+        var metaBits = [];
+        if (it.src && it.src.length) {
+          it.src.forEach(function (s) {
+            metaBits.push('<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.label) + '</a>');
+          });
+        }
+        if (it.meta) metaBits.push(esc(it.meta));
+        if (metaBits.length) html += '<p class="meta">' + (it.src && it.src.length ? '来源 · ' : '') + metaBits.join(' <span aria-hidden="true">|</span> ') + '</p>';
+        if (it.note) html += '<p class="note">' + esc(it.note) + '</p>';
+        html += '</div></article>';
+      });
+    }
+
+    if (sec.type === 'table') {
+      html += '<div class="tbl-wrap"><table>';
+      html += '<caption>' + esc(sec.caption) + '</caption><colgroup>';
+      sec.cols.forEach(function (c) { html += '<col style="width:' + esc(c.w) + '">'; });
+      html += '</colgroup><thead><tr>';
+      sec.cols.forEach(function (c) { html += '<th scope="col">' + esc(c.label) + '</th>'; });
+      html += '</tr></thead><tbody>';
+      sec.rows.forEach(function (r) {
+        html += '<tr><td class="k">' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+
+    if (sec.type === 'list') {
+      if (sec.intro) html += '<p class="role">' + esc(sec.intro) + '</p>';
+      html += '<ul class="list">';
+      sec.items.forEach(function (it) {
+        html += '<li><b>' + esc(it.b) + '</b>　' + esc(it.text) + '</li>';
+      });
+      html += '</ul>';
+      if (sec.after) {
+        html += '<p class="role" style="margin-top:1.8rem"><b style="font-weight:500">选型三问</b>　上面是查得到的部分，下面是查不到时的判断方式。</p>';
+        html += '<ul class="list">';
+        sec.after.forEach(function (it) {
+          html += '<li><b>' + esc(it.b) + '</b>　' + esc(it.text) + '</li>';
+        });
+        html += '</ul>';
+      }
+    }
+
+    html += '</div></section>';
+  });
+
+  host.innerHTML = html;
+})();
+
+/* ---------- 复制 ---------- */
+(function () {
+  var toast = document.getElementById('toast');
+  var timer = null;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add('on');
+    clearTimeout(timer);
+    timer = setTimeout(function () { toast.classList.remove('on'); }, 1600);
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.copy') : null;
+    if (!btn) return;
+    var text = btn.getAttribute('data-copy') || '';
+    var done = function () {
+      btn.textContent = 'COPIED';
+      btn.setAttribute('data-done', '1');
+      say('已复制：' + text);
+      setTimeout(function () {
+        btn.textContent = 'COPY';
+        btn.removeAttribute('data-done');
+      }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { say('复制失败，请手动选中命令'); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (err) { say('复制失败，请手动选中命令'); }
+      document.body.removeChild(ta);
+    }
+  });
+})();
+
+/* ---------- 检索过滤 ---------- */
+(function () {
+  var input = document.getElementById('q');
+  var out = document.getElementById('filter-out');
+  var entries = Array.prototype.slice.call(document.querySelectorAll('.entry'));
+  var secs = Array.prototype.slice.call(document.querySelectorAll('#sections > section'));
+
+  function apply(raw) {
+    var q = raw.trim().toLowerCase();
+    var hits = 0;
+    entries.forEach(function (el) {
+      var ok = !q || el.getAttribute('data-s').indexOf(q) !== -1;
+      el.style.display = ok ? '' : 'none';
+      if (ok) hits++;
+    });
+    secs.forEach(function (sec) {
+      var list = sec.querySelectorAll('.entry');
+      if (!list.length) return;
+      var visible = Array.prototype.some.call(list, function (el) { return el.style.display !== 'none'; });
+      sec.style.display = visible ? '' : 'none';
+    });
+    out.innerHTML = '命中 <b>' + hits + '</b> / ' + TOTAL;
+  }
+  input.addEventListener('input', function () { apply(input.value); });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { input.value = ''; apply(''); }
+  });
+  apply('');
+})();
+
+/* ---------- 分布图 ---------- */
+(function () {
+  var host = document.getElementById('chart');
+  var SHORT = {
+    'cloud': '国内云资源',
+    'storage': '对象存储',
+    'model': '模型平台',
+    'global-cloud': '海外云',
+    'global-agent': '海外 Agent'
+  };
+  var data = itemSections.map(function (s) {
+    return { name: SHORT[s.id] || s.title, value: s.items.length, id: s.id };
+  }).reverse();
+
+  if (!window.echarts) {
+    host.innerHTML = '<p class="chart-note">图表库未加载，分布改用文字列出：' +
+      data.map(function (d) { return esc(d.name) + ' ' + d.value + ' 条'; }).join('；') + '</p>';
+    return;
+  }
+
+  var INK = '#15181a', INK2 = '#5c6469', RULE = '#ced3c8', MARK = '#c8ef2b', PAPER = '#eef0ea';
+  var chart = echarts.init(host, null, { renderer: 'canvas' });
+  chart.setOption({
+    animationDuration: 520,
+    grid: { left: 8, right: 44, top: 10, bottom: 6, containLabel: true },
+    tooltip: {
+      trigger: 'item', confine: true,
+      backgroundColor: INK, borderWidth: 0,
+      textStyle: { color: PAPER, fontFamily: 'JetBrains Mono, Noto Sans SC', fontSize: 12 },
+      formatter: function (p) { return p.name + '　' + p.value + ' 条'; }
+    },
+    xAxis: {
+      type: 'value', minInterval: 1,
+      axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false },
+      splitLine: { lineStyle: { color: RULE, type: [2, 4] } }
+    },
+    yAxis: {
+      type: 'category',
+      data: data.map(function (d) { return d.name; }),
+      axisLine: { show: false }, axisTick: { show: false },
+      axisLabel: { color: INK, fontSize: 11, fontFamily: 'Noto Sans SC, sans-serif', margin: 12 }
+    },
+    series: [{
+      type: 'bar', barWidth: 14,
+      data: data.map(function (d) { return d.value; }),
+      itemStyle: { color: INK, borderWidth: 0 },
+      emphasis: { itemStyle: { color: MARK } },
+      label: {
+        show: true, position: 'right', distance: 8,
+        color: INK2, fontSize: 11, fontFamily: 'JetBrains Mono, monospace',
+        formatter: '{c}'
+      },
+      cursor: 'pointer'
+    }]
+  });
+
+  chart.on('click', function (p) {
+    var d = data[p.dataIndex];
+    if (!d) return;
+    var el = document.getElementById(d.id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  var t = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(function () { chart.resize(); }, 140);
+  });
+})();
+</script>
+</body>
+</html>
